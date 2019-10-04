@@ -8,7 +8,6 @@ You must give appropriate credit citing:
 If you use the modules for 2D images analysis, cite:
 
 * Torre, I. G.,Martín-Sotoca, JJ;  Losada, J. C., Lopez, P., & Tarquis, A. M. (2018). Multiscaling properties of soil images. biosystems engineering, 168, 133-141.
-
 * Torre, I. G., Losada, J. C., & Tarquis, A. M. Scaling properties of binary and greyscale images in the context of X-ray soil tomography. [preprint]
 
 If you use the modules for 3D analysis, cite:  
@@ -34,7 +33,7 @@ Open ImajeJ, load an image and the code will be under Plugins/Multifractal Soil 
 * 3D Gliding Multifractal: Calculate multifractal analysis of 3D stack images by gliding box method including Dq,alpha, f(alpha)
 * 3D Structure Function: Calculate Structure function of 3D stack images
 
-############################ SUPPORT ###########################
+### SUPPORT
 There is not official support but feel free for contacting me at:  
 ivan.gonzalez.torre(at)upm.es
 
