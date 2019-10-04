@@ -38,6 +38,6 @@ There is a detailed manual for some of the multifractal analysis options which i
 * 3D Structure Function: Calculate Structure function of 3D stack images
 
 ### SUPPORT
-There is not official support but feel free for contacting me at:  
+There is not official support but feel free to contact me at:  
 ivan.gonzalez.torre(at)upm.es
 
