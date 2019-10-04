@@ -5,7 +5,7 @@ This is a plugin for ImageJ (https://imagej.nih.gov/ij/index.html) for multifrac
 This is released uncer license Creative Commons 4.0: Attribution   
 You must give appropriate credit citing
 
-# CITE 
+### CITE 
 If you use the modules for 2D images analysis, cite:
 
 * Torre, I. G.,Martín-Sotoca, JJ;  Losada, J. C., Lopez, P., & Tarquis, A. M. (2018). Multiscaling properties of soil images. biosystems engineering, 168, 133-141.
