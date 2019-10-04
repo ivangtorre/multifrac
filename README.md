@@ -24,25 +24,16 @@ Open ImajeJ, load an image and the code will be under Plugins/Multifractal Soil 
 
 #################### OPTIONS FOR ANALYSIS ###############################
 
-*2D Box Counting Monofractal: Calculate monofractal analysis of 2D images by box counting method
-
-2D Box Counting Multifractal: Calculate multifractal analysis of 2D images by box counting method including Dq,alpha, f(alpha)
-
-2D Gliding Multifractal: Calculate multifractal analysis of 2D images by gliding box method including Dq,alpha, f(alpha)
-
-2D Lac Conf Entropy: Calculate lacunarity and configuration entropy of 2D B&W images by gliding box method
-
-2D Lac Gray: Calculate lacunarity of 2D gray images by gliding box method
-
-2D Structure Function: Calculate Structure function of 2D images
-
-3D Box Counting Monofractal: Calculate monofractal analysis of 3D stack images by box counting method
-
-3D Box Counting Multifractal:  Calculate multifractal analysis of 3D stack images by box counting method including Dq,alpha, f(alpha)
-
-3D Gliding Multifractal: Calculate multifractal analysis of 3D stack images by gliding box method including Dq,alpha, f(alpha)
-
-3D Structure Function: Calculate Structure function of 3D stack images
+* 2D Box Counting Monofractal: Calculate monofractal analysis of 2D images by box counting method
+* 2D Box Counting Multifractal: Calculate multifractal analysis of 2D images by box counting method including Dq,alpha, f(alpha)
+* 2D Gliding Multifractal: Calculate multifractal analysis of 2D images by gliding box method including Dq,alpha, f(alpha)
+* 2D Lac Conf Entropy: Calculate lacunarity and configuration entropy of 2D B&W images by gliding box method
+* 2D Lac Gray: Calculate lacunarity of 2D gray images by gliding box method
+* 2D Structure Function: Calculate Structure function of 2D images
+* 3D Box Counting Monofractal: Calculate monofractal analysis of 3D stack images by box counting method
+* 3D Box Counting Multifractal:  Calculate multifractal analysis of 3D stack images by box counting method including Dq,alpha, f(alpha)
+* 3D Gliding Multifractal: Calculate multifractal analysis of 3D stack images by gliding box method including Dq,alpha, f(alpha)
+* 3D Structure Function: Calculate Structure function of 3D stack images
 
 ############################ SUPPORT ###########################
 There is not official support but feel free for contacting me at:
