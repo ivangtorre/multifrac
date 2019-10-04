@@ -16,7 +16,7 @@ If you use the modules for 3D analysis, cite:
 Torre, I. G., Losada, J. C., Heck, R. J., & Tarquis, A. M. (2018). Multifractal analysis of 3D images of tillage soil. Geoderma, 311, 167-174.
 
 
-############## INSTALLATION and USE #################
+## ############## INSTALLATION and USE #################
 
 Unzip and add the folder  "Multifractal soil analysis" to Imagej/plugins
 Open ImajeJ, load an image and the code will be under Plugins/Multifractal Soil Analysis
