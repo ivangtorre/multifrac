@@ -11,14 +11,13 @@ If you use the modules for 2D images analysis, cite:
 
 * Torre, I. G., Losada, J. C., & Tarquis, A. M. Scaling properties of binary and greyscale images in the context of X-ray soil tomography. [preprint]
 
-If you use the modules for 3D analysis, cite:
-
+If you use the modules for 3D analysis, cite:  
 * Torre, I. G., Losada, J. C., Heck, R. J., & Tarquis, A. M. (2018). Multifractal analysis of 3D images of tillage soil. Geoderma, 311, 167-174.
 
 
 ### INSTALLATION and USE
 
-Unzip and add the folder  "Multifractal soil analysis" to Imagej/plugins
+Unzip and add the folder  "Multifractal soil analysis" to Imagej/plugins  
 Open ImajeJ, load an image and the code will be under Plugins/Multifractal Soil Analysis
 
 
@@ -36,7 +35,6 @@ Open ImajeJ, load an image and the code will be under Plugins/Multifractal Soil 
 * 3D Structure Function: Calculate Structure function of 3D stack images
 
 ############################ SUPPORT ###########################
-There is not official support but feel free for contacting me at:
-
+There is not official support but feel free for contacting me at:  
 ivan.gonzalez.torre(at)upm.es
 
