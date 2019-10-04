@@ -24,8 +24,7 @@ Open ImajeJ, load an image and the code will be under Plugins/Multifractal Soil 
 
 #################### OPTIONS FOR ANALYSIS ###############################
 
-2D Box Counting Monofractal: Calculate monofractal analysis of 2D images by box counting method
-
+2D Box Counting Monofractal: Calculate monofractal analysis of 2D images by box counting method \n
 2D Box Counting Multifractal: Calculate multifractal analysis of 2D images by box counting method including Dq,alpha, f(alpha)
 
 2D Gliding Multifractal: Calculate multifractal analysis of 2D images by gliding box method including Dq,alpha, f(alpha)
