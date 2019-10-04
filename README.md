@@ -1,8 +1,9 @@
 # multifractal-analysis-images
 
-This is a plugin for ImageJ (https://imagej.nih.gov/ij/index.html) for multifractal analysis of 2D and 3D images.
+This is a plugin for ImageJ for multifractal analysis of 2D and 3D images.  
+ImageJ can be download from its official site: https://imagej.nih.gov/ij/index.html
 
-This is released uncer license Creative Commons 4.0: Attribution   
+This plugin is released uncer license Creative Commons 4.0: Attribution   
 You must give appropriate credit citing
 
 ### CITE 
