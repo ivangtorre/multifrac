@@ -1,0 +1,6 @@
+#BlueJ class context
+comment0.params=arg\ imp
+comment0.target=int\ setup(java.lang.String,\ ij.ImagePlus)
+comment1.params=ip
+comment1.target=void\ run(ij.process.ImageProcessor)
+numComments=2

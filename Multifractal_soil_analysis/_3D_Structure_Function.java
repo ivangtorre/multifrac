@@ -35,10 +35,9 @@ protected ImageStack stackaux;
 		int[] lista_tau;
 		lista_tau = tauconstruct.gettau();
 
-		//DIALOG Q
-		qdialogtau qconstruct = new qdialogtau();
-		double[] lista_q;
-		lista_q = qconstruct.getq();
+        //INPUT DIALOG Q VALUES ********************************************************************************
+         qdialog ask_q = new qdialog();
+         double[] q = ask_q.getq();
 	
 
 		////////////////////////////////////////////////
@@ -63,7 +62,7 @@ protected ImageStack stackaux;
 		// GETTING THE MATRIX FROM IMAGE
 		double infinito = pow(0,-1);
 		int tau, m = fullimage.height, n = fullimage.width;			// Matrix is (m rows x n columns) size
-		double fxy_tau, autocorr_xy, q;		
+		double fxy_tau, autocorr_xy;		
 		
 		double[][][] matriz = new double[n][m][stack.getSize()];
 		for (int z=1; z<stack.getSize()+1; z++){
@@ -79,10 +78,9 @@ protected ImageStack stackaux;
 		//////////////MAIN OPERATIONS///////////////////////
 		////////////////////////////////////////////////////
 		IJ.log("Calculating...");
-		double[][] Mq = new double[lista_tau.length][lista_q.length];		
-		for (int qposition = 0; qposition < lista_q.length; qposition++){
-			IJ.log("" + (lista_q.length - qposition));
-			q = lista_q[qposition];
+		double[][] Mq = new double[lista_tau.length][q.length];		
+		for (int qposition = 0; qposition < q.length; qposition++){
+			IJ.log("" + (q.length - qposition));
 			for (int tauposition = 0; tauposition < lista_tau.length; tauposition++){
 				tau = lista_tau[tauposition];
 				// For a given q and tau do autocorrelation
@@ -94,7 +92,7 @@ protected ImageStack stackaux;
 							fxy_tau += matriz[x][(y+tau)%m][z] + matriz[x][(y-tau+m)%m][z];
 							fxy_tau += matriz[x][y][(z+tau)%stack.getSize()] + matriz[x][y][(z-tau+stack.getSize())%stack.getSize()];
 							fxy_tau = fxy_tau/6;
-							autocorr_xy = pow(abs(fxy_tau - matriz[x][y][z]),q);
+							autocorr_xy = pow(abs(fxy_tau - matriz[x][y][z]), q[qposition]);
 							if (autocorr_xy == infinito) {autocorr_xy = 0;}
 							lista.add(autocorr_xy);
 						}
@@ -115,7 +113,7 @@ protected ImageStack stackaux;
 		resultestructure result = new resultestructure();
 		result.Mq = Mq;
 		result.lista_tau = lista_tau;
-		result.lista_q = lista_q;
+		result.lista_q = q;
 		result.out();
 
 		// TOTAL TIME

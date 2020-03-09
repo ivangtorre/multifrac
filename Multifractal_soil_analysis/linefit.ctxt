@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=
+comment0.target=ij.measure.CurveFitter\ getcf()
+comment1.params=
+comment1.target=double\ getslope()
+comment2.params=
+comment2.target=double\ getdevslope()
+numComments=3

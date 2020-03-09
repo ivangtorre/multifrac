@@ -157,7 +157,7 @@ public class resultmultifractal{
 		ImagePlus imp_plot0 = plot0.getImagePlus();
 		IJ.saveAs(imp_plot0, "Jpeg", path + "X(q,epsilon)"+ str);
 		imp_plot0.close();
-		IJ.selectWindow("X(q,epsilon)"+ str);
+		IJ.selectWindow("X(q,epsilon)"+str);
 
 
 
@@ -240,7 +240,7 @@ public class resultmultifractal{
 
 		table1.show("Results");
 		IJ.selectWindow("Results");
-		IJ.save(path+"Results.txt");
+		IJ.save(path+"Results.csv");
 		
 
 

@@ -26,554 +26,544 @@ import static java.lang.Math.*;
 
 
 public class _2D_Gliding_Multifractal implements PlugInFilter {
-	public String base_path;
-	public String imagename;	
-	public int setup(String arg, ImagePlus imp) {
-		//if (imp.getProcessor().isInvertedLut()){
-		//	IJ.run("Invert LUT");
-		//}
-		base_path = imp.getOriginalFileInfo().directory;
-		imagename = imp.getOriginalFileInfo().fileName;
-		return DOES_8G+DOES_16+DOES_32;							// Suports gray scale image
-	}
+    public String base_path;
+    public String imagename;    
+    public int setup(String arg, ImagePlus imp) {
+        //if (imp.getProcessor().isInvertedLut()){
+        //  IJ.run("Invert LUT");
+        //}
+        base_path = imp.getOriginalFileInfo().directory;
+        imagename = imp.getOriginalFileInfo().fileName;
+        return DOES_8G+DOES_16+DOES_32;                         // Suports gray scale image
+    }
 
-	public void run(ImageProcessor ip) {				
-		//INPUT DIALOG Q VALUES ********************************************************************************
-		GenericDialog gdq = new GenericDialog("Select q values for multifractal dimensions");	// Create dialog
-		gdq.addNumericField("qmin: ", -10, 0);							// Field1
-		gdq.addNumericField("qmax: ", 10, 0);							// Field2
-		gdq.addNumericField("qincrement: ", 0.1, 1);						// Field3
-		gdq.showDialog();									// Show
-		if (gdq.wasCanceled()) return;								// If no input, cancell program
-		double qmin, qmax, qincrement;
-		qmin       = (double)gdq.getNextNumber();						// Save value1
-		qmax       = (double)gdq.getNextNumber();						// Save value2
-		qincrement = (double)gdq.getNextNumber();						// Save value3
-		double[] q = new double[(int)((qmax - qmin)/qincrement)+1];				// Declare q array
-		for (int count = 0; count<q.length; count++){						// Asign q values to the array	
-			q[count] = qmin + count*qincrement;
-		}
-
-		// CHECK SIZE OF IMAGE ***************************************************************************************
-		double woriginal  = ip.getWidth();						// width from the original image
-		double horiginal  = ip.getHeight();						// heigth from the original image
-		double maxsize	  = min(woriginal,horiginal);					// Max size of ROI
-
-		GenericDialog gd = new GenericDialog("Select min and max size of box (in pixels)");	// Create dialog
-		gd.addNumericField("minsize: ", 1, 0);							// Field1
-		gd.addNumericField("maxsize: ", maxsize, 0);						// Field2
-		gd.showDialog();									// Show
-		if (gd.wasCanceled()) return;
-		int nmin       = (int)gd.getNextNumber();						// Save value1
-		int nmax       = (int)gd.getNextNumber();						// Save value2
-
-		int resolution = ip.getBitDepth();
-		ImagePlus salida = NewImage.createImage("Analyzed Image", (int)woriginal, (int)horiginal, 1, resolution, NewImage.FILL_BLACK);
-		ImageProcessor salida_aux = salida.getProcessor(); 				// Processing
-		salida_aux.copyBits(ip,0,0,Blitter.COPY);					// Copy pixels	
-		salida.show();									// Show
-		salida.updateAndDraw();		
-
-
-		// CHOOSE THE WHICH PIXEL IS MAX VALUE ***************************************************************************
-		ImageProcessor salida_ip = salida.getProcessor();
-		GenericDialog gd1	= new GenericDialog("Process image");			// Create dialog
-		String[] titleArray2 	= new String[2];
-		gd1.addMessage("Maximum measure will be for the white. Do you want to analyze this image or the inverted one?");
-		titleArray2[0] = "This image";
-		titleArray2[1] = "Inverted image";
-		gd1.addChoice("  ", titleArray2, titleArray2[0]);
-		gd1.showDialog();
-		if (gd1.wasCanceled()) return;
-		int choose;
-		choose = gd1.getNextChoiceIndex();
-		if (choose == 0){
-		}
-		else if (choose == 1){// Then invert image
-			salida_ip = salida.getProcessor(); 		// Processing the image after the changes
-			Rectangle fullimage = salida_ip.getRoi();				// ROI full image
-			if (resolution == 16){
-				Rectangle r = salida_ip.getRoi();
-      				for (int y=fullimage.y; y<(fullimage.y+fullimage.height); y++){			// Normalize matriz
-					for (int x=fullimage.x; x<(fullimage.x+fullimage.width); x++){
-          					salida_ip.set(x, y, (int)abs(65535 - salida_ip.get(x,y)));
-    					}
-  				}
-			salida.updateAndDraw();
-			IJ.wait(500);
-			}
-
-			else if (resolution != 16){
-				IJ.run(salida, "Invert", "");				// Invert image. Count black mass
-				salida.updateAndDraw();
-				IJ.wait(500);
-			}
-		}
-
-		//Input dialog por saving path
-		String save_path_pred;
-		String[] parts = imagename.split("\\.");
-		String part1 = parts[0]; // 004
-		base_path = base_path + part1 + "/";
-		if (choose == 0){save_path_pred = base_path + "gliding/white_max_value/min_" + nmin + "px/";} 
-		else {save_path_pred = base_path + "gliding/black_max_value/min_" + nmin + "px/";}
-
-		//GenericDialog gdpath = new GenericDialog("Select path for saving results");	// Create dialog
-		//gdpath.addStringField("Ruta", save_path_pred);
-		//gdpath.showDialog();
-		String path;
-		//path = gdpath.getNextString();
-		path = save_path_pred;
-
-		// Check if path exists and if not, create it
-		File wdir = new File(path);
-		if (!wdir.isDirectory() || !wdir.exists() || !wdir.canRead()) {
-			wdir.mkdirs();
-			IJ.log("Path created.");}
-
-
-
-
-		salida_ip = salida.getProcessor(); 				// Processing the image after the changes
-		Rectangle fullimage = salida_ip.getRoi();					// ROI full image
-		if (resolution == 16){
-			Rectangle r = salida_ip.getRoi();
-      			for (int y=r.y; y<(r.y+r.height); y++){
-        			for (int x=r.x; x<(r.x+r.width); x++){
-          				salida_ip.set(x, y, (int)abs(65535 - salida_ip.get(x,y)));
-    				}
-  			}
-		salida.updateAndDraw();
-		IJ.wait(500);
-		} 
-
-		else if (resolution != 16){
-			//IJ.run(salida, "Invert", "");						// Invert image. Count black mass
-			//salida.updateAndDraw();
-			//IJ.wait(500);
-		}
-		
-		long time_start, time_end;
-		time_start = System.currentTimeMillis();
-
-		// Begining of the program
-		double sum = salida_ip.getStatistics().area*salida_ip.getStatistics().mean; 	// Sum of all pixels value
-		double[][] matriz = new double[fullimage.width][fullimage.height];		// Matriz with values
-		for (int y=fullimage.y; y<(fullimage.y+fullimage.height); y++){			// Normalize matriz
-			for (int x=fullimage.x; x<(fullimage.x+fullimage.width); x++){
-				matriz[x][y] = salida_ip.get(x,y)/sum;
-			}
-		}
-
-		double[] epsilon   	= new double[(int)maxsize+1];  				// Adimensional size of ROIs
-		double[][][] Xnum   	= new double[(int)maxsize+1][q.length][3]; 		// Xnum(q)		
-		double deltavalue 	= 0.01;		
-		double [] delta 	= {0,-deltavalue,deltavalue};
-		double P = 0;
-		Roi cuadradointeres;								// variable tipo Roi
-		Rectangle roi;									// Region of interest multifractal
-
-		// Gliding Box bucle
-		for (int n = nmin; n<=nmax; n++){
-			IJ.log(""+(nmax-n));							// Show bucles left 
-			epsilon[n]   = (double)(n)/(double)maxsize;
-			int numpixel = (n);							// Size in pixels of ROIs
-			int box      = 0;
-			double boxnumbers  = (woriginal-n+1)*(horiginal-n+1);			// Number of box for gliding
-			double[] Parchive  = new double[(int)boxnumbers];
-
-			// Creating ROIs along image
-			for (int y=fullimage.y; y<fullimage.y+fullimage.height-numpixel+1; y++){
-				for (int x=fullimage.x; x<fullimage.x+fullimage.width-numpixel+1; x++){
-					cuadradointeres = new Roi(x, y, numpixel, numpixel);	// Creating size of ROI
-					salida_ip.setRoi(cuadradointeres);		    	// Fix ROI in the image
-					roi = salida_ip.getRoi();				// Processing ROI
-					P=0;
-				
-					// Counting pixels along roi 
-					for (int yy=roi.y; yy<(roi.y+roi.height); yy++){		
-						for (int xx=roi.x; xx<(roi.x+roi.width); xx++){
-							P += matriz[xx][yy];
-						}
-					}
-					if (P>0) {
-						Parchive[box] = P;
-						box++;
-						// Calculate Xnum
-						for (int qposition = 0; qposition<q.length; qposition++){
-							for (int deltaposition = 0; deltaposition<3; deltaposition++){
-								Xnum[n][qposition][deltaposition] += pow(P,q[qposition]+delta[deltaposition]);
-							}
-						}	
-					}
-				}
-			}
-			for (int qposition = 0; qposition<q.length; qposition++){
-				for (int deltaposition = 0; deltaposition<3; deltaposition++){
-					Xnum[n][qposition][deltaposition] = Xnum[n][qposition][deltaposition]/box;
-				}
-			}	
-
-		}
-
-		if (resolution == 16){
-		Rectangle r = salida_ip.getRoi();
-      			for (int y=fullimage.y; y<(fullimage.y+fullimage.height); y++){			// Normalize matriz
-				for (int x=fullimage.x; x<(fullimage.x+fullimage.width); x++){
-          				salida_ip.set(x, y, (int)abs(65535 - salida_ip.get(x,y)));
-    				}
-  			}
-		salida.updateAndDraw();
-		IJ.wait(500);
-		} 
-
-		else if (resolution != 16){
-			IJ.run(salida, "Invert", "");						// Invert image. Count black mass
-			salida.updateAndDraw();
-			IJ.wait(500);
-		}
-
-		double minx0 = 0;
-		double maxx0 = 0;
-		double[] x = new double[nmax-nmin+1];						// x = log(epsilon)
-		for(int n = 0; n <= nmax-nmin; n++){
-			x[n] = log(epsilon[n+nmin]);
-			if (x[n]>maxx0){maxx0=x[n];}
-			if (x[n]<minx0){minx0=x[n];}
-		}
-
-		double miny0 = 0;
-		double maxy0 = 0;	
-		double[][][] y = new double[nmax-nmin+1][q.length][3]; 				// y = log(X(q))
-		for (int n = 0; n<=nmax-nmin; n++){
-			for (int qposition = 0; qposition<q.length; qposition++){
-				for (int deltaposition = 0; deltaposition<3; deltaposition++){
-					y[n][qposition][deltaposition] = log(Xnum[n+nmin][qposition][deltaposition]);
-					if (y[n][qposition][deltaposition]>maxy0){maxy0=y[n][qposition][deltaposition];}
-					else if (y[n][qposition][deltaposition]<miny0){miny0=y[n][qposition][deltaposition];}
-				}	 	
-			}
-		}		
-		
-		// CURVE FITTING (type of fitType: STRAIGHT_LINE=0, POLY2=1, POLY3=2, POLY4=3, EXPONENTIAL=4, POWER=5,...)	
-		double[] TauQ     	= new double[q.length];					// Slopes
-		double[][] TauQaux     	= new double[q.length][3];				// Slopes
-		double[] desvTauQ 	= new double[q.length];					// Tau error
-		double[][] desvTauQaux 	= new double[q.length][3];
-		double[] relerror	= new double[q.length];
-		double[] Dq       	= new double[q.length];					// Dq
-		double[] desvDq   	= new double[q.length];					// Dq error
-		double[] alphaq   	= new double[q.length];					// Dq error
-		double[] desvalphaq   	= new double[q.length];
-		double[] fq  		= new double[q.length];					// Dq error
-		double[] desvfq  	= new double[q.length];
-		double[] ybar 		= new double[y.length];
-
-		// TauQ and eror
-		for (int qposition = 0; qposition<q.length; qposition++){
-			double[] yaux = new double[y.length];					// Adjusting aux array
-			for (int deltaposition = 0; deltaposition<3; deltaposition++){
-				for(int n = 0; n < y.length; n++){
-					yaux[n] = y[n][qposition][deltaposition];
-				}
-			
-				linefit fit1 = new linefit();
-				fit1.x   = x;							// slope parameter x
-				fit1.y   = yaux;						// slope parameter y
-				TauQaux[qposition][deltaposition]     	= fit1.getslope() - 2;	// slope
-				desvTauQaux[qposition][deltaposition]	= fit1.getdevslope();	// slope error
-				if (deltaposition == 0){
-			  		TauQ[qposition]     	= fit1.getslope() - 2;
-					desvTauQ[qposition]	= fit1.getdevslope();	// slope error
-				}
-			}
-			relerror[qposition] = desvTauQ[qposition]/abs(TauQ[qposition]);
-			if (q[qposition] == 1){
-				relerror[qposition] = (relerror[qposition-1]+relerror[qposition+1])/2;
-			}
-		}
-
-		// Dq and error
-		for (int qposition = 0; qposition<q.length; qposition++){
-			if (q[qposition] != 1){
-				Dq[qposition]     = TauQ[qposition]/(q[qposition] - 1);
-				desvDq[qposition] = desvTauQ[qposition]/abs(q[qposition] - 1);
-			}	
-		}
-		for (int qposition = 0; qposition<q.length; qposition++){
-			if (q[qposition] == 1){
-				Dq[qposition]     = (Dq[qposition-1]+Dq[qposition+1])/2;
-				desvDq[qposition] = (desvDq[qposition-1]+desvDq[qposition+1])/2;
-			}
-		}
-
-		// PLOT AND TABLES //
-		String str = new String(" 2D Multifractal Gliding method");
-
-		// PLot X(q,epsilon) vs epsilon
-		Plot plot0 = new Plot("X(q,epsilon)"+str, "ln(epsilon)", "ln(X(q))");
-		PlotWindow.noGridLines = false; 		// draw grid lines
-		plot0.setLimits(minx0-0.5, maxx0 + 0.5,miny0-1,maxy0+1);
-		for(int qposition = 0; qposition < q.length; qposition++){
-			for(int n = 0; n < y.length; n++){
-				ybar[n] = y[n][qposition][0];
-			}
-		plot0.addPoints(x, ybar, Plot.LINE);
-		}
-		plot0.show();
-		ImagePlus imp_plot0 = plot0.getImagePlus();
-		IJ.saveAs(imp_plot0, "Jpeg", path + "X(q,epsilon)"+ str);
-		imp_plot0.close();
-		IJ.selectWindow("X(q,epsilon)"+ str);
-		
-
-
-
-		// Plot TauQ vs q
-		PlotWindow.noGridLines = false; 						// draw grid lines
-		Plot plot1 = new Plot("TauQ vs q"+str, "q", "TauQ", q, TauQ);
-		plot1.setLimits((q[0])-0.5, q[q.length -1]+0.5, TauQ[0]-desvTauQ[q.length -1]-0.5, TauQ[q.length -1]+desvTauQ[0]+0.5);
-		plot1.setLineWidth(2);								// Line width
-		plot1.addErrorBars(desvTauQ); 							// Errors bars
-		plot1.setColor(Color.red);							// line color
-		plot1.show();
-		ImagePlus imp_plot1 = plot1.getImagePlus();
-		IJ.saveAs(imp_plot1, "Jpeg", path + "TauQ vs q"+ str);
-		imp_plot1.close();
-
-
-		// Plot q vs Dq
-		PlotWindow.noGridLines = false; 						// draw grid lines
-		Plot plot2 = new Plot("Dq vs q"+str, "q", "Dq", q, Dq);
-		plot2.setLimits((q[0]) -0.5, q[q.length -1] + 0.5, Dq[q.length -1] - desvDq[q.length -1] - 0.5, Dq[0] + desvDq[0] + 0.5);
-		plot2.setLineWidth(2);								// Line width
-		plot2.addErrorBars(desvDq); 							// Errors bars
-		plot2.setColor(Color.red);							// line color
-		plot2.show();
-		ImagePlus imp_plot2 = plot2.getImagePlus();
-		IJ.saveAs(imp_plot2, "Jpeg", path + "Dq vs q"+ str);
-		imp_plot2.close();
-
-
-		// We estimate alpha(q) with central differences methods. 
-		// alpha(q) = dTau(q)/dq;
-		double maxx 		= 0;
-		double minx 		= 10;
-		double maxdesvalphaq 	= 0;
-		double alpha1 		= 0;
-		double err_alpha1 	= 0.0;
-		double alphamin 	= 100;
-		double err_alphamin 	= 0;
-		int qposition_alphamin 	= 0;
-
-		double alphamax 	= -100;
-		double err_alphamax 	= 0;
-		int qposition_alphamax 	= 0;
-
-		for (int qposition = 0; qposition<q.length; qposition++){
-			alphaq[qposition] = (TauQaux[qposition][2]-TauQaux[qposition][1])/((q[qposition]+deltavalue) - (q[qposition]-deltavalue));
-			if (alphaq[qposition]<minx){minx=alphaq[qposition];}
-			if (alphaq[qposition]>maxx){maxx=alphaq[qposition];}
-			desvalphaq[qposition] = abs((alphaq[qposition])*(relerror[qposition]));
-			if (desvalphaq[qposition]>maxdesvalphaq){maxdesvalphaq=desvalphaq[qposition];}
-			if (q[qposition] == 1){alpha1 = alphaq[qposition];
-						err_alpha1 = desvalphaq[qposition];}
-			if (alphaq[qposition] < alphamin){alphamin = alphaq[qposition];
-								err_alphamin = desvalphaq[qposition];
-								qposition_alphamin = qposition;}
-			if (alphaq[qposition] > alphamax){alphamax = alphaq[qposition];
-								err_alphamax = desvalphaq[qposition];
-								qposition_alphamax = qposition;}
-
-		}
-
-		// Plot q vs alpha(q)
-		PlotWindow.noGridLines = false; 						// draw grid lines
-		Plot plot3 = new Plot("alpha(q) vs q"+str, "q", "alpha(q)", q, alphaq);
-		plot3.setLimits(q[0] -0.5, q[q.length -1] + 0.5, alphaq[q.length -1] - 0.5 - maxdesvalphaq, alphaq[0] + 0.5 +  maxdesvalphaq );
-		plot3.setLineWidth(2);								// Line width
-		plot3.addErrorBars(desvalphaq); 							// Errors bars
-		plot3.setColor(Color.red);							// line color
-		//plot3.show();
-
-		// Calculate f(alpha)
-		// f(alpha) = alpha(q)*q - Tauq(q)
-		double maxy 		= 0;
-		double miny 		= 10;
-		double maxdesvfq 	= 0;
-
-		for (int qposition = 0; qposition<q.length; qposition++){
-			fq[qposition] = (alphaq[qposition])*(q[qposition]) - TauQ[qposition];
-			if (fq[qposition] < miny){miny = fq[qposition];}
-			if (fq[qposition] > maxy){maxy = fq[qposition];}
-			desvfq[qposition] = (desvalphaq[qposition])*(abs(q[qposition])) + desvTauQ[qposition];
-			if (desvfq[qposition]>maxdesvfq){maxdesvfq=desvfq[qposition];}
-  		}
-		
-		// Plot alpha vs f(alpha)
-		PlotWindow.noGridLines = false; 						// draw grid lines
-		Plot plot4 = new Plot("f(alpha) vs alpha"+str, "alpha", "f(alpha)", alphaq, fq);
-		plot4.setLimits(minx - 0.5 - maxdesvalphaq,maxx + 0.5 + maxdesvalphaq,miny -0.5 - maxdesvfq,maxy + 0.5 + maxdesvfq);
-		plot4.setLineWidth(2);								// Line width
-		plot4.setColor(Color.red);							// line color
-		for (int qposition = 0; qposition<q.length; qposition++){
-			plot4.drawLine(alphaq[qposition]-desvalphaq[qposition],fq[qposition],alphaq[qposition]+desvalphaq[qposition],fq[qposition]);
-		}
-
-		plot4.show();
-		ImagePlus imp_plot3 = plot4.getImagePlus();
-		IJ.saveAs(imp_plot3, "Jpeg", path + "f(alpha) vs alpha"+ str);
-		imp_plot3.close();
-		
-		// RESULTS TABLE
- 		ResultsTable table = new ResultsTable();
- 		for(int counter = 0; counter < q.length; counter++)    {
-			table.incrementCounter();
-			table.addValue("q", IJ.d2s(q[counter], 2));
-			table.addValue("TauQ",IJ.d2s(TauQ[counter], 8));
-			table.addValue("error TauQ",IJ.d2s(desvTauQ[counter], 8));
-			table.addValue("Dq",IJ.d2s(Dq[counter], 8));
-			table.addValue("error Dq",IJ.d2s(desvDq[counter], 8));
- 			table.addValue("alpha", IJ.d2s(alphaq[counter], 8));
- 			table.addValue("error alpha", IJ.d2s(desvalphaq[counter], 8));
- 			table.addValue("f(alpha)", IJ.d2s(fq[counter], 8));
-			table.addValue("error f", IJ.d2s(desvfq[counter], 8));
-		}
-
-		for(int ep = 0; ep < x.length; ep++){
-			table.incrementCounter();
-			for(int qposition = 0; qposition < q.length; qposition++){
-				String fs;
-				fs = String.format("x %d",qposition);
-				table.addValue(fs, x[ep]);
-				String fs2;
-				fs2 = String.format("y %d",qposition);
-				table.addValue(fs2, y[ep][qposition][0]);	
-			}
-		}
-
-		table.setPrecision(8);
-		table.updateResults();
-		table.setPrecision(8);
-
-		table.show("Results");
-		IJ.selectWindow("Results");
-		IJ.save(path+"Results.txt");
-		IJ.run("Close");
-
-
-		// TABLE espectrum
- 		ResultsTable table2 = new ResultsTable();
+    public void run(ImageProcessor ip) {
+          
 	
-		//Area_fraction
-		double total_pixel = 0.0; 
-		double countValue = 0.0;
-		for( int d_x = 0; d_x < ip.getWidth(); d_x++ ) { 
-		        for( int d_y = 0; d_y < ip.getHeight(); d_y++ ) {
-				total_pixel += 1; 
-		                if(ip.get(d_x,d_y) == 0 ) { 
-		                        countValue += 1; 
-		                } 
-		        } 
-		} 
+        //INPUT DIALOG Q VALUES ********************************************************************************
+         qdialog ask_q = new qdialog();
+	 double[] q = ask_q.getq();
+
+        // CHECK SIZE OF IMAGE ***************************************************************************************
+        double woriginal  = ip.getWidth();                      // width from the original image
+        double horiginal  = ip.getHeight();                     // heigth from the original image
+        double maxsize    = min(woriginal,horiginal);                   // Max size of ROI
+
+        GenericDialog gd = new GenericDialog("Select min and max size of box (in pixels)"); // Create dialog
+        gd.addNumericField("minsize: ", 1, 0);                          // Field1
+        gd.addNumericField("maxsize: ", maxsize, 0);                        // Field2
+        gd.showDialog();                                    // Show
+        if (gd.wasCanceled()) return;
+        int nmin       = (int)gd.getNextNumber();                       // Save value1
+        int nmax       = (int)gd.getNextNumber();                       // Save value2
+
+        int resolution = ip.getBitDepth();
+        ImagePlus salida = NewImage.createImage("Analyzed Image", (int)woriginal, (int)horiginal, 1, resolution, NewImage.FILL_BLACK);
+        ImageProcessor salida_aux = salida.getProcessor();              // Processing
+        salida_aux.copyBits(ip,0,0,Blitter.COPY);                   // Copy pixels  
+        salida.show();                                  // Show
+        salida.updateAndDraw();     
 
 
-		// Write to table
-		table2.incrementCounter();
-		double areafraction = (total_pixel - countValue)/total_pixel;
-		table2.addValue("value", IJ.d2s(areafraction, 2));
-		table2.addLabel("porosity");
+        // CHOOSE THE WHICH PIXEL IS MAX VALUE ***************************************************************************
+        ImageProcessor salida_ip = salida.getProcessor();
+        GenericDialog gd1   = new GenericDialog("Process image");           // Create dialog
+        String[] titleArray2    = new String[2];
+        gd1.addMessage("Maximum measure will be for the white. Do you want to analyze this image or the inverted one?");
+        titleArray2[0] = "This image";
+        titleArray2[1] = "Inverted image";
+        gd1.addChoice("  ", titleArray2, titleArray2[0]);
+        gd1.showDialog();
+        if (gd1.wasCanceled()) return;
+        int choose;
+        choose = gd1.getNextChoiceIndex();
+        if (choose == 0){
+        }
+        else if (choose == 1){// Then invert image
+            salida_ip = salida.getProcessor();      // Processing the image after the changes
+            Rectangle fullimage = salida_ip.getRoi();               // ROI full image
+            if (resolution == 16){
+                Rectangle r = salida_ip.getRoi();
+                    for (int y=fullimage.y; y<(fullimage.y+fullimage.height); y++){         // Normalize matriz
+                    for (int x=fullimage.x; x<(fullimage.x+fullimage.width); x++){
+                            salida_ip.set(x, y, (int)abs(65535 - salida_ip.get(x,y)));
+                        }
+                }
+            salida.updateAndDraw();
+            IJ.wait(500);
+            }
 
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(alpha1, 3));
-		table2.addLabel("alpha1");
+            else if (resolution != 16){
+                IJ.run(salida, "Invert", "");               // Invert image. Count black mass
+                salida.updateAndDraw();
+                IJ.wait(500);
+            }
+        }
 
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(err_alpha1, 4));
-		table2.addLabel("alpha1 error");
+        //Input dialog por saving path
+        String save_path_pred;
+        String[] parts = imagename.split("\\.");
+        String part1 = parts[0]; // 004
+        base_path = base_path + part1 + "/";
+        if (choose == 0){save_path_pred = base_path + "gliding/white_max_value/min_" + nmin + "px/";} 
+        else {save_path_pred = base_path + "gliding/black_max_value/min_" + nmin + "px/";}
 
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(alphamin, 5));
-		table2.addLabel("alphamin");
+        //GenericDialog gdpath = new GenericDialog("Select path for saving results");   // Create dialog
+        //gdpath.addStringField("Ruta", save_path_pred);
+        //gdpath.showDialog();
+        String path;
+        //path = gdpath.getNextString();
+        path = save_path_pred;
 
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(err_alphamin, 6));
-		table2.addLabel("alphamin error");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(fq[qposition_alphamin], 7));
-		table2.addLabel("f_alphamin");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(desvfq[qposition_alphamin], 8));
-		table2.addLabel("f_alphamin error");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(alphamax, 9));
-		table2.addLabel("alphamax");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(err_alphamax, 10));
-		table2.addLabel("alphamax error");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(fq[qposition_alphamax], 11));
-		table2.addLabel("f_alphamax");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(desvfq[qposition_alphamax], 12));
-		table2.addLabel("f_alphamax error");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(alphamax - alphamin, 13));
-		table2.addLabel("alphamax-alphamin");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(err_alphamin + err_alphamax, 14));
-		table2.addLabel("alphamax-alphamin error");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(fq[qposition_alphamax] - fq[qposition_alphamin], 15));
-		table2.addLabel("falphamax-falphamin");
-
-		table2.incrementCounter();
-		table2.addValue("value", IJ.d2s(desvfq[qposition_alphamax] + desvfq[qposition_alphamin], 16));
-		table2.addLabel("falphamax-falphamin error");
-
-
-
-
-
-
-
-		table2.updateResults();
-		table2.show("parameteres");
-		IJ.selectWindow("parameteres");
-		IJ.save(path+"parameters.txt");
-		IJ.run("Close");
-		IJ.selectWindow("Results");
-		IJ.run("Close");
+        // Check if path exists and if not, create it
+        File wdir = new File(path);
+        if (!wdir.isDirectory() || !wdir.exists() || !wdir.canRead()) {
+            wdir.mkdirs();
+            IJ.log("Path created.");}
 
 
 
 
-		//areafraction = measures.getResult("Min");
- 		//table2.setPrecision(8);
-		//table2.updateResults();
-		//table2.setPrecision(8);
+        salida_ip = salida.getProcessor();              // Processing the image after the changes
+        Rectangle fullimage = salida_ip.getRoi();                   // ROI full image
+        if (resolution == 16){
+            Rectangle r = salida_ip.getRoi();
+                for (int y=r.y; y<(r.y+r.height); y++){
+                    for (int x=r.x; x<(r.x+r.width); x++){
+                        salida_ip.set(x, y, (int)abs(65535 - salida_ip.get(x,y)));
+                    }
+            }
+        salida.updateAndDraw();
+        IJ.wait(500);
+        } 
 
-		//table2.show("Espectrum and parameters");
-		//IJ.selectWindow("Espectrum and parameters");
-		//IJ.save(path+"Espectrum_and_parameters.txt");
+        else if (resolution != 16){
+            //IJ.run(salida, "Invert", "");                     // Invert image. Count black mass
+            //salida.updateAndDraw();
+            //IJ.wait(500);
+        }
+        
+        long time_start, time_end;
+        time_start = System.currentTimeMillis();
+
+        // Begining of the program
+        double sum = salida_ip.getStatistics().area*salida_ip.getStatistics().mean;     // Sum of all pixels value
+        double[][] matriz = new double[fullimage.width][fullimage.height];      // Matriz with values
+        for (int y=fullimage.y; y<(fullimage.y+fullimage.height); y++){         // Normalize matriz
+            for (int x=fullimage.x; x<(fullimage.x+fullimage.width); x++){
+                matriz[x][y] = salida_ip.get(x,y)/sum;
+            }
+        }
+
+        double[] epsilon    = new double[(int)maxsize+1];               // Adimensional size of ROIs
+        double[][][] Xnum       = new double[(int)maxsize+1][q.length][3];      // Xnum(q)      
+        double deltavalue   = 0.01;     
+        double [] delta     = {0,-deltavalue,deltavalue};
+        double P = 0;
+        Roi cuadradointeres;                                // variable tipo Roi
+        Rectangle roi;                                  // Region of interest multifractal
+
+        // Gliding Box bucle
+        for (int n = nmin; n<=nmax; n++){
+            IJ.log(""+(nmax-n));                            // Show bucles left 
+            epsilon[n]   = (double)(n)/(double)maxsize;
+            int numpixel = (n);                         // Size in pixels of ROIs
+            int box      = 0;
+            double boxnumbers  = (woriginal-n+1)*(horiginal-n+1);           // Number of box for gliding
+            double[] Parchive  = new double[(int)boxnumbers];
+
+            // Creating ROIs along image
+            for (int y=fullimage.y; y<fullimage.y+fullimage.height-numpixel+1; y++){
+                for (int x=fullimage.x; x<fullimage.x+fullimage.width-numpixel+1; x++){
+                    cuadradointeres = new Roi(x, y, numpixel, numpixel);    // Creating size of ROI
+                    salida_ip.setRoi(cuadradointeres);              // Fix ROI in the image
+                    roi = salida_ip.getRoi();               // Processing ROI
+                    P=0;
+                
+                    // Counting pixels along roi 
+                    for (int yy=roi.y; yy<(roi.y+roi.height); yy++){        
+                        for (int xx=roi.x; xx<(roi.x+roi.width); xx++){
+                            P += matriz[xx][yy];
+                        }
+                    }
+                    if (P>0) {
+                        Parchive[box] = P;
+                        box++;
+                        // Calculate Xnum
+                        for (int qposition = 0; qposition<q.length; qposition++){
+                            for (int deltaposition = 0; deltaposition<3; deltaposition++){
+                                Xnum[n][qposition][deltaposition] += pow(P,q[qposition]+delta[deltaposition]);
+                            }
+                        }   
+                    }
+                }
+            }
+            for (int qposition = 0; qposition<q.length; qposition++){
+                for (int deltaposition = 0; deltaposition<3; deltaposition++){
+                    Xnum[n][qposition][deltaposition] = Xnum[n][qposition][deltaposition]/box;
+                }
+            }   
+
+        }
+
+        if (resolution == 16){
+        Rectangle r = salida_ip.getRoi();
+                for (int y=fullimage.y; y<(fullimage.y+fullimage.height); y++){         // Normalize matriz
+                for (int x=fullimage.x; x<(fullimage.x+fullimage.width); x++){
+                        salida_ip.set(x, y, (int)abs(65535 - salida_ip.get(x,y)));
+                    }
+            }
+        salida.updateAndDraw();
+        IJ.wait(500);
+        } 
+
+        else if (resolution != 16){
+            IJ.run(salida, "Invert", "");                       // Invert image. Count black mass
+            salida.updateAndDraw();
+            IJ.wait(500);
+        }
+
+        double minx0 = 0;
+        double maxx0 = 0;
+        double[] x = new double[nmax-nmin+1];                       // x = log(epsilon)
+        for(int n = 0; n <= nmax-nmin; n++){
+            x[n] = log(epsilon[n+nmin]);
+            if (x[n]>maxx0){maxx0=x[n];}
+            if (x[n]<minx0){minx0=x[n];}
+        }
+
+        double miny0 = 0;
+        double maxy0 = 0;   
+        double[][][] y = new double[nmax-nmin+1][q.length][3];              // y = log(X(q))
+        for (int n = 0; n<=nmax-nmin; n++){
+            for (int qposition = 0; qposition<q.length; qposition++){
+                for (int deltaposition = 0; deltaposition<3; deltaposition++){
+                    y[n][qposition][deltaposition] = log(Xnum[n+nmin][qposition][deltaposition]);
+                    if (y[n][qposition][deltaposition]>maxy0){maxy0=y[n][qposition][deltaposition];}
+                    else if (y[n][qposition][deltaposition]<miny0){miny0=y[n][qposition][deltaposition];}
+                }       
+            }
+        }       
+        
+        // CURVE FITTING (type of fitType: STRAIGHT_LINE=0, POLY2=1, POLY3=2, POLY4=3, EXPONENTIAL=4, POWER=5,...)  
+        double[] TauQ       = new double[q.length];                 // Slopes
+        double[][] TauQaux      = new double[q.length][3];              // Slopes
+        double[] desvTauQ   = new double[q.length];                 // Tau error
+        double[][] desvTauQaux  = new double[q.length][3];
+        double[] relerror   = new double[q.length];
+        double[] Dq         = new double[q.length];                 // Dq
+        double[] desvDq     = new double[q.length];                 // Dq error
+        double[] alphaq     = new double[q.length];                 // Dq error
+        double[] desvalphaq     = new double[q.length];
+        double[] fq         = new double[q.length];                 // Dq error
+        double[] desvfq     = new double[q.length];
+        double[] ybar       = new double[y.length];
+
+        // TauQ and eror
+        for (int qposition = 0; qposition<q.length; qposition++){
+            double[] yaux = new double[y.length];                   // Adjusting aux array
+            for (int deltaposition = 0; deltaposition<3; deltaposition++){
+                for(int n = 0; n < y.length; n++){
+                    yaux[n] = y[n][qposition][deltaposition];
+                }
+            
+                linefit fit1 = new linefit();
+                fit1.x   = x;                           // slope parameter x
+                fit1.y   = yaux;                        // slope parameter y
+                TauQaux[qposition][deltaposition]       = fit1.getslope() - 2;  // slope
+                desvTauQaux[qposition][deltaposition]   = fit1.getdevslope();   // slope error
+                if (deltaposition == 0){
+                    TauQ[qposition]         = fit1.getslope() - 2;
+                    desvTauQ[qposition] = fit1.getdevslope();   // slope error
+                }
+            }
+            relerror[qposition] = desvTauQ[qposition]/abs(TauQ[qposition]);
+            if (q[qposition] == 1){
+                relerror[qposition] = (relerror[qposition-1]+relerror[qposition+1])/2;
+            }
+        }
+
+        // Dq and error
+        for (int qposition = 0; qposition<q.length; qposition++){
+            if (q[qposition] != 1){
+                Dq[qposition]     = TauQ[qposition]/(q[qposition] - 1);
+                desvDq[qposition] = desvTauQ[qposition]/abs(q[qposition] - 1);
+            }   
+        }
+        for (int qposition = 0; qposition<q.length; qposition++){
+            if (q[qposition] == 1){
+                Dq[qposition]     = (Dq[qposition-1]+Dq[qposition+1])/2;
+                desvDq[qposition] = (desvDq[qposition-1]+desvDq[qposition+1])/2;
+            }
+        }
+
+        // PLOT AND TABLES //
+        String str = new String(" 2D Multifractal Gliding method");
+
+        // PLot X(q,epsilon) vs epsilon
+        Plot plot0 = new Plot("X(q,epsilon)"+str, "ln(epsilon)", "ln(X(q))");
+        PlotWindow.noGridLines = false;         // draw grid lines
+        plot0.setLimits(minx0-0.5, maxx0 + 0.5,miny0-1,maxy0+1);
+        for(int qposition = 0; qposition < q.length; qposition++){
+            for(int n = 0; n < y.length; n++){
+                ybar[n] = y[n][qposition][0];
+            }
+        plot0.addPoints(x, ybar, Plot.LINE);
+        }
+        plot0.show();
+        ImagePlus imp_plot0 = plot0.getImagePlus();
+        IJ.saveAs(imp_plot0, "Jpeg", path + "X(q,epsilon)"+ str);
+        imp_plot0.close();
+        IJ.selectWindow("X(q,epsilon)"+ str);
+        
 
 
 
-		time_end = System.currentTimeMillis();
-		IJ.log("");
-		IJ.log("The task has taken "+ ( time_end - time_start ) +" milliseconds");
-		
+        // Plot TauQ vs q
+        PlotWindow.noGridLines = false;                         // draw grid lines
+        Plot plot1 = new Plot("TauQ vs q"+str, "q", "TauQ", q, TauQ);
+        plot1.setLimits((q[0])-0.5, q[q.length -1]+0.5, TauQ[0]-desvTauQ[q.length -1]-0.5, TauQ[q.length -1]+desvTauQ[0]+0.5);
+        plot1.setLineWidth(2);                              // Line width
+        plot1.addErrorBars(desvTauQ);                           // Errors bars
+        plot1.setColor(Color.red);                          // line color
+        plot1.show();
+        ImagePlus imp_plot1 = plot1.getImagePlus();
+        IJ.saveAs(imp_plot1, "Jpeg", path + "TauQ vs q"+ str);
+        imp_plot1.close();
 
 
-	}
+        // Plot q vs Dq
+        PlotWindow.noGridLines = false;                         // draw grid lines
+        Plot plot2 = new Plot("Dq vs q"+str, "q", "Dq", q, Dq);
+        plot2.setLimits((q[0]) -0.5, q[q.length -1] + 0.5, Dq[q.length -1] - desvDq[q.length -1] - 0.5, Dq[0] + desvDq[0] + 0.5);
+        plot2.setLineWidth(2);                              // Line width
+        plot2.addErrorBars(desvDq);                             // Errors bars
+        plot2.setColor(Color.red);                          // line color
+        plot2.show();
+        ImagePlus imp_plot2 = plot2.getImagePlus();
+        IJ.saveAs(imp_plot2, "Jpeg", path + "Dq vs q"+ str);
+        imp_plot2.close();
+
+
+        // We estimate alpha(q) with central differences methods. 
+        // alpha(q) = dTau(q)/dq;
+        double maxx         = 0;
+        double minx         = 10;
+        double maxdesvalphaq    = 0;
+        double alpha1       = 0;
+        double err_alpha1   = 0.0;
+        double alphamin     = 100;
+        double err_alphamin     = 0;
+        int qposition_alphamin  = 0;
+
+        double alphamax     = -100;
+        double err_alphamax     = 0;
+        int qposition_alphamax  = 0;
+
+        for (int qposition = 0; qposition<q.length; qposition++){
+            alphaq[qposition] = (TauQaux[qposition][2]-TauQaux[qposition][1])/((q[qposition]+deltavalue) - (q[qposition]-deltavalue));
+            if (alphaq[qposition]<minx){minx=alphaq[qposition];}
+            if (alphaq[qposition]>maxx){maxx=alphaq[qposition];}
+            desvalphaq[qposition] = abs((alphaq[qposition])*(relerror[qposition]));
+            if (desvalphaq[qposition]>maxdesvalphaq){maxdesvalphaq=desvalphaq[qposition];}
+            if (q[qposition] == 1){alpha1 = alphaq[qposition];
+                        err_alpha1 = desvalphaq[qposition];}
+            if (alphaq[qposition] < alphamin){alphamin = alphaq[qposition];
+                                err_alphamin = desvalphaq[qposition];
+                                qposition_alphamin = qposition;}
+            if (alphaq[qposition] > alphamax){alphamax = alphaq[qposition];
+                                err_alphamax = desvalphaq[qposition];
+                                qposition_alphamax = qposition;}
+
+        }
+
+        // Plot q vs alpha(q)
+        PlotWindow.noGridLines = false;                         // draw grid lines
+        Plot plot3 = new Plot("alpha(q) vs q"+str, "q", "alpha(q)", q, alphaq);
+        plot3.setLimits(q[0] -0.5, q[q.length -1] + 0.5, alphaq[q.length -1] - 0.5 - maxdesvalphaq, alphaq[0] + 0.5 +  maxdesvalphaq );
+        plot3.setLineWidth(2);                              // Line width
+        plot3.addErrorBars(desvalphaq);                             // Errors bars
+        plot3.setColor(Color.red);                          // line color
+        //plot3.show();
+
+        // Calculate f(alpha)
+        // f(alpha) = alpha(q)*q - Tauq(q)
+        double maxy         = 0;
+        double miny         = 10;
+        double maxdesvfq    = 0;
+
+        for (int qposition = 0; qposition<q.length; qposition++){
+            fq[qposition] = (alphaq[qposition])*(q[qposition]) - TauQ[qposition];
+            if (fq[qposition] < miny){miny = fq[qposition];}
+            if (fq[qposition] > maxy){maxy = fq[qposition];}
+            desvfq[qposition] = (desvalphaq[qposition])*(abs(q[qposition])) + desvTauQ[qposition];
+            if (desvfq[qposition]>maxdesvfq){maxdesvfq=desvfq[qposition];}
+        }
+        
+        // Plot alpha vs f(alpha)
+        PlotWindow.noGridLines = false;                         // draw grid lines
+        Plot plot4 = new Plot("f(alpha) vs alpha"+str, "alpha", "f(alpha)", alphaq, fq);
+        plot4.setLimits(minx - 0.5 - maxdesvalphaq,maxx + 0.5 + maxdesvalphaq,miny -0.5 - maxdesvfq,maxy + 0.5 + maxdesvfq);
+        plot4.setLineWidth(2);                              // Line width
+        plot4.setColor(Color.red);                          // line color
+        for (int qposition = 0; qposition<q.length; qposition++){
+            plot4.drawLine(alphaq[qposition]-desvalphaq[qposition],fq[qposition],alphaq[qposition]+desvalphaq[qposition],fq[qposition]);
+        }
+
+        plot4.show();
+        ImagePlus imp_plot3 = plot4.getImagePlus();
+        IJ.saveAs(imp_plot3, "Jpeg", path + "f(alpha) vs alpha"+ str);
+        imp_plot3.close();
+        
+        // RESULTS TABLE
+        ResultsTable table = new ResultsTable();
+        for(int counter = 0; counter < q.length; counter++)    {
+            table.incrementCounter();
+            table.addValue("q", IJ.d2s(q[counter], 2));
+            table.addValue("TauQ",IJ.d2s(TauQ[counter], 8));
+            table.addValue("error TauQ",IJ.d2s(desvTauQ[counter], 8));
+            table.addValue("Dq",IJ.d2s(Dq[counter], 8));
+            table.addValue("error Dq",IJ.d2s(desvDq[counter], 8));
+            table.addValue("alpha", IJ.d2s(alphaq[counter], 8));
+            table.addValue("error alpha", IJ.d2s(desvalphaq[counter], 8));
+            table.addValue("f(alpha)", IJ.d2s(fq[counter], 8));
+            table.addValue("error f", IJ.d2s(desvfq[counter], 8));
+        }
+
+        for(int ep = 0; ep < x.length; ep++){
+            table.incrementCounter();
+            for(int qposition = 0; qposition < q.length; qposition++){
+                String fs;
+                fs = String.format("x %d",qposition);
+                table.addValue(fs, x[ep]);
+                String fs2;
+                fs2 = String.format("y %d",qposition);
+                table.addValue(fs2, y[ep][qposition][0]);   
+            }
+        }
+
+        table.setPrecision(8);
+        table.updateResults();
+        table.setPrecision(8);
+
+        table.show("Results");
+        IJ.selectWindow("Results");
+        IJ.save(path+"Results.txt");
+        IJ.run("Close");
+
+
+        // TABLE espectrum
+        ResultsTable table2 = new ResultsTable();
+    
+        //Area_fraction
+        double total_pixel = 0.0; 
+        double countValue = 0.0;
+        for( int d_x = 0; d_x < ip.getWidth(); d_x++ ) { 
+                for( int d_y = 0; d_y < ip.getHeight(); d_y++ ) {
+                total_pixel += 1; 
+                        if(ip.get(d_x,d_y) == 0 ) { 
+                                countValue += 1; 
+                        } 
+                } 
+        } 
+
+
+        // Write to table
+        table2.incrementCounter();
+        double areafraction = (total_pixel - countValue)/total_pixel;
+        table2.addValue("value", IJ.d2s(areafraction, 2));
+        table2.addLabel("porosity");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(alpha1, 3));
+        table2.addLabel("alpha1");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(err_alpha1, 4));
+        table2.addLabel("alpha1 error");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(alphamin, 5));
+        table2.addLabel("alphamin");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(err_alphamin, 6));
+        table2.addLabel("alphamin error");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(fq[qposition_alphamin], 7));
+        table2.addLabel("f_alphamin");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(desvfq[qposition_alphamin], 8));
+        table2.addLabel("f_alphamin error");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(alphamax, 9));
+        table2.addLabel("alphamax");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(err_alphamax, 10));
+        table2.addLabel("alphamax error");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(fq[qposition_alphamax], 11));
+        table2.addLabel("f_alphamax");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(desvfq[qposition_alphamax], 12));
+        table2.addLabel("f_alphamax error");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(alphamax - alphamin, 13));
+        table2.addLabel("alphamax-alphamin");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(err_alphamin + err_alphamax, 14));
+        table2.addLabel("alphamax-alphamin error");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(fq[qposition_alphamax] - fq[qposition_alphamin], 15));
+        table2.addLabel("falphamax-falphamin");
+
+        table2.incrementCounter();
+        table2.addValue("value", IJ.d2s(desvfq[qposition_alphamax] + desvfq[qposition_alphamin], 16));
+        table2.addLabel("falphamax-falphamin error");
+
+
+
+
+
+
+
+        table2.updateResults();
+        table2.show("parameteres");
+        IJ.selectWindow("parameteres");
+        IJ.save(path+"parameters.txt");
+        IJ.run("Close");
+        IJ.selectWindow("Results");
+        IJ.run("Close");
+
+
+
+
+        //areafraction = measures.getResult("Min");
+        //table2.setPrecision(8);
+        //table2.updateResults();
+        //table2.setPrecision(8);
+
+        //table2.show("Espectrum and parameters");
+        //IJ.selectWindow("Espectrum and parameters");
+        //IJ.save(path+"Espectrum_and_parameters.txt");
+
+
+
+        time_end = System.currentTimeMillis();
+        IJ.log("");
+        IJ.log("The task has taken "+ ( time_end - time_start ) +" milliseconds");
+        
+
+
+    }
 
 }
