@@ -18,11 +18,13 @@ If you use the modules for 3D analysis, cite:
 
 ### INSTALLATION and USE
 
-Unzip and add the folder  "Multifractal soil analysis" to Imagej/plugins  
+Copy the folder  "Multifractal soil analysis" to Imagej/plugins  
 Open ImajeJ, load an image and the code will be under Plugins/Multifractal Soil Analysis  
 
 There is a detailed manual for some of the multifractal analysis options which includes some computing analysis tests available by the end of the document:
 * González Torre, I. (2014). Theory and application of multifractal analysis methods in images for the study of soil structure (Master thesis, Agronomica).
+
+I am nowadays updating the plugin and I will release some test and documentation soon.
 
 
 ### OPTIONS FOR ANALYSIS
