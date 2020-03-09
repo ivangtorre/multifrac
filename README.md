@@ -11,6 +11,7 @@ If you use the modules for 2D images analysis, cite:
 
 * Torre, I. G.,Martín-Sotoca, JJ;  Losada, J. C., Lopez, P., & Tarquis, A. M. (2018). Multiscaling properties of soil images. biosystems engineering, 168, 133-141.
 * Torre, I. G., Martín-Sotoca, J. J., Losada, J. C., López, P., & Tarquis, A. M. (2020). Scaling properties of binary and greyscale images in the context of X-ray soil tomography. Geoderma, 365, 114205.
+
 If you use the modules for 3D analysis, cite:  
 * Torre, I. G., Losada, J. C., Heck, R. J., & Tarquis, A. M. (2018). Multifractal analysis of 3D images of tillage soil. Geoderma, 311, 167-174.
 
