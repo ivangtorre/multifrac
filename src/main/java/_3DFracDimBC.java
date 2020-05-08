@@ -60,8 +60,9 @@ public class _3DFracDimBC implements PlugInFilter {
 				"	This program comes with ABSOLUTELY NO WARRANTY\n" + 
 				"   This is free software, and you are welcome to redistribute it\n" + 
 				"   under certain conditions. Please cite:\n" +
-				"	I. G. Torre and A. M. Tarquis, MULTIFRAC: An ImageJ plugin for multifractal and \n" + 
-				"	multiscale characterization of 2D and 3D stack images");
+				"	Torre, I.G., Heck R.J. & Tarquis, A.M. (2020).\n" +
+				"   MULTIFRAC: An ImageJ plugin for multiscale characterization\n" + 
+				"   of 2D and 3D stack images.");
 		
 		/** ----------Check size of image and resize if necessary----------------------------- */
 		double woriginal = stackaux.getWidth();

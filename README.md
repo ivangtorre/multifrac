@@ -8,8 +8,7 @@ You must give appropriate credit citing
 
 ### CITE 
 
-* Torre, I. G., & Tarquis, A. M. (2020). MULTIFRAC: An ImageJ plugin for multifractal and multiscale characterization of 2D and 3D stack images.
-
+* Torre, I.G., Heck R.J. & Tarquis, A.M. (2020). MULTIFRAC: An ImageJ plugin for multiscale characterization of 2D and 3D stack images.
 
 Classes have developed during several projects and more information could be found in:
 
