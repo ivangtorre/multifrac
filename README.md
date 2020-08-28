@@ -8,11 +8,11 @@ You must give appropriate credit citing
 
 ### CITE 
 
-* Torre, I.G., Heck R.J. & Tarquis, A.M. (2020). MULTIFRAC: An ImageJ plugin for multiscale characterization of 2D and 3D stack images.
+* Torre, I.G., Heck R.J. & Tarquis, A.M. (2020). MULTIFRAC: An ImageJ plugin for multiscale characterization of 2D and 3D stack images. SoftwareX, 12, 100574.
 
 Classes have developed during several projects and more information could be found in:
 
-* Torre, I. G., Martín-Sotoca, JJ;  Losada, J. C., Lopez, P., & Tarquis, A. M. (2018). Multiscaling properties of soil images. biosystems engineering, 168, 133-141.
+* Torre, I. G., Martín-Sotoca, JJ;  Losada, J. C., Lopez, P., & Tarquis, A. M. (2018). Multiscaling properties of soil images. Biosystems engineering, 168, 133-141.
 * Torre, I. G., Martín-Sotoca, J. J., Losada, J. C., López, P., & Tarquis, A. M. (2020). Scaling properties of binary and greyscale images in the context of X-ray soil tomography. Geoderma, 365, 114205.
 * Torre, I. G., Losada, J. C., Heck, R. J., & Tarquis, A. M. (2018). Multifractal analysis of 3D images of tillage soil. Geoderma, 311, 167-174.
 
@@ -37,7 +37,7 @@ More info: https://imagej.net/Multifrac
 
 ### SUPPORT
 There is not official support but feel free to contact me at:  
-ivan.gonzalez.torre(at)upm.es
+ivangonzaleztorre(at)gmail.com
 
 ### DEVELOPMENT
 This plugins has been developed with Eclipse and Mavens. 
